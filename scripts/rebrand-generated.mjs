@@ -60,7 +60,16 @@ function adapt(content, relativePath) {
         'this.headers.putIfAbsent("X-ProofState-Sdk-Name", "proofstate-java");\n'
           + `    this.headers.putIfAbsent("X-ProofState-Sdk-Version", "${version}");`,
       );
-    } else if (!result.includes('this.headers.putIfAbsent("X-ProofState-Sdk-Name"')) {
+    } else if (result.includes('this.headers.putIfAbsent("X-ProofState-Sdk-Name"')) {
+      const brandedVersion = /this\.headers\.putIfAbsent\("X-ProofState-Sdk-Version", "[^"]*"\);/;
+      if (!brandedVersion.test(result)) {
+        throw new Error("The generated client version header changed unexpectedly");
+      }
+      result = result.replace(
+        brandedVersion,
+        `this.headers.putIfAbsent("X-ProofState-Sdk-Version", "${version}");`,
+      );
+    } else {
       throw new Error("The generated client identity headers changed unexpectedly");
     }
   }

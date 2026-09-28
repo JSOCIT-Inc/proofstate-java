@@ -65,7 +65,8 @@ but does not instrument an application or manage span export.
 integration tests when `PROOFSTATE_PUBLIC_KEY`, `PROOFSTATE_SECRET_KEY`, and
 `PROOFSTATE_BASE_URL` are set. Copy `.env.example` to `.env` to provide them.
 The integration suite expects `test-chat-prompt` and `test-text-prompt` in that
-project and skips when credentials are absent.
+project, also reads the project prompt, dataset, and model lists, and skips
+when credentials are absent.
 
 ## API coverage and regeneration
 
@@ -88,3 +89,31 @@ property before this client is used against production. The Java client and
 server must be deployed together for the renamed contract.
 
 The source repository is [JSOCIT-Inc/proofstate-java](https://github.com/JSOCIT-Inc/proofstate-java). Before publishing, establish Maven Central ownership, a signing process, and authenticated server-backed checks.
+
+## Publishing a prerelease
+
+The release job is opt-in and does not run on normal pushes. A Maven Central
+publisher must first verify the `ai.proofstate` namespace by proving ownership
+of `proofstate.ai` in the [Central Portal](https://central.sonatype.com/). Set up
+the `maven-central` GitHub environment with required reviewer protection and
+these environment secrets:
+
+- `MAVEN_CENTRAL_USERNAME` and `MAVEN_CENTRAL_PASSWORD`: the Central Portal user
+  token pair, not the account login.
+- `MAVEN_GPG_PRIVATE_KEY` and `MAVEN_GPG_PASSPHRASE`: the armored release-signing
+  private key and its passphrase. Publish the corresponding public key.
+
+After the matching server release and authenticated SDK smoke test pass, replace
+the snapshot POM version with a prerelease version, such as `0.1.0-rc.1`. Make
+the generated `X-ProofState-Sdk-Version` value match the POM with
+`node scripts/rebrand-generated.mjs --refresh`, then run `./mvnw clean verify`.
+Commit the version change, create a tag `v0.1.0-rc.1`
+on that commit, and start the **Publish Maven Central** workflow with that tag.
+The workflow verifies the tag and POM version, reruns tests, signs the JAR,
+sources, Javadoc and POM, and publishes through the Central Portal. The
+release profile in `pom.xml` is inactive during ordinary builds. Published
+Maven Central versions are immutable.
+
+Do not run the release workflow until the namespace is verified and the
+server-backed smoke test succeeds. This snapshot's missing newer API endpoints
+must also be resolved or explicitly documented for the first public version.
