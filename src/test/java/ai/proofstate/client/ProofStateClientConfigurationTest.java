@@ -35,7 +35,7 @@ class ProofStateClientConfigurationTest {
                 "pk-ps-example:sk-ps-example".getBytes(StandardCharsets.UTF_8));
         assertThat(request.header("Authorization")).isEqualTo("Basic " + token);
         assertThat(request.header("X-ProofState-Sdk-Name")).isEqualTo("proofstate-java");
-        assertThat(request.header("X-ProofState-Sdk-Version")).isEqualTo("0.1.0-SNAPSHOT");
+        assertThat(request.header("X-ProofState-Sdk-Version")).isEqualTo("0.1.0-rc.1");
         assertThat(request.header("X-ProofState-Public-Key")).isEqualTo("pk-ps-example");
         assertThat(request.header("X-Fern-SDK-Name")).isNull();
     }
@@ -44,12 +44,12 @@ class ProofStateClientConfigurationTest {
     void requestOptionsUseProofStateHeaders() {
         RequestOptions options = RequestOptions.builder()
                 .xProofStateSdkName("proofstate-java")
-                .xProofStateSdkVersion("0.1.0-SNAPSHOT")
+                .xProofStateSdkVersion("0.1.0-rc.1")
                 .xProofStatePublicKey("pk-ps-example")
                 .build();
 
         assertThat(options.getHeaders()).containsEntry("X-ProofState-Sdk-Name", "proofstate-java")
-                .containsEntry("X-ProofState-Sdk-Version", "0.1.0-SNAPSHOT")
+                .containsEntry("X-ProofState-Sdk-Version", "0.1.0-rc.1")
                 .containsEntry("X-ProofState-Public-Key", "pk-ps-example");
     }
 

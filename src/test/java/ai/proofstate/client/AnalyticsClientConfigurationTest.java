@@ -43,7 +43,7 @@ class AnalyticsClientConfigurationTest {
                 "pk-ps-example:sk-ps-example".getBytes(StandardCharsets.UTF_8));
         assertThat(request.header("Authorization")).isEqualTo("Basic " + token);
         assertThat(request.header("X-ProofState-Sdk-Name")).isEqualTo("proofstate-java");
-        assertThat(request.header("X-ProofState-Sdk-Version")).isEqualTo("0.1.0-SNAPSHOT");
+        assertThat(request.header("X-ProofState-Sdk-Version")).isEqualTo("0.1.0-rc.1");
         assertThat(request.header("X-Fern-Language")).isNull();
     }
 }

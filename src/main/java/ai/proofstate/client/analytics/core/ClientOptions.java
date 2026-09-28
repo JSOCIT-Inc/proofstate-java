@@ -33,7 +33,7 @@ public final class ClientOptions {
     this.headers = new HashMap<>();
     this.headers.putAll(headers);
     this.headers.putIfAbsent("X-ProofState-Sdk-Name", "proofstate-java");
-    this.headers.putIfAbsent("X-ProofState-Sdk-Version", "0.1.0-SNAPSHOT");
+    this.headers.putIfAbsent("X-ProofState-Sdk-Version", "0.1.0-rc.1");
     this.headerSuppliers = headerSuppliers;
     this.httpClient = httpClient;
     this.timeout = timeout;
