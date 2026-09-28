@@ -18,6 +18,7 @@ method on the original `ProofStateClient` stays available.
 
 ## Build and install
 
+The `0.1.0-rc.1` release is available on [Maven Central](https://central.sonatype.com/artifact/ai.proofstate/proofstate-java/0.1.0-rc.1).
 The build was verified with Java 21 and the included Maven wrapper:
 
 ```bash
@@ -133,7 +134,12 @@ The ProofState server at `https://proofstate.ai` accepts the matching
 `isProofStateManaged` model JSON property. Verify compatibility with any other
 ProofState deployment before using this client there.
 
-The source repository is [JSOCIT-Inc/proofstate-java](https://github.com/JSOCIT-Inc/proofstate-java). The `ai.proofstate` Maven Central namespace is verified, and the protected release environment holds a Central publisher token and signing credentials. The first release requires protected environment approval after its build checks pass.
+The source repository is [JSOCIT-Inc/proofstate-java](https://github.com/JSOCIT-Inc/proofstate-java).
+The `ai.proofstate` namespace is verified, and version `0.1.0-rc.1` is
+published on Maven Central with its POM, JAR, sources, Javadoc, and GPG
+signatures. The protected release environment holds a Central publisher token
+and signing credentials; each future release requires environment approval after
+its build checks pass.
 
 ## Publishing a prerelease
 
