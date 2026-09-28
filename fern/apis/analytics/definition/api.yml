@@ -1,0 +1,29 @@
+name: proofstate
+docs: |
+  ## Authentication
+
+  Authenticate with the API using [Basic Auth](https://en.wikipedia.org/wiki/Basic_access_authentication), get API keys in the project settings:
+
+  - username: ProofState Public Key
+  - password: ProofState Secret Key
+
+  ## Exports
+
+  - OpenAPI spec: `/generated/api/openapi.yml`
+  - Interactive API reference: `/api/docs`
+
+error-discrimination:
+  strategy: status-code
+auth: basic
+imports:
+  commons: commons.yml
+errors:
+  - commons.Error
+  - commons.UnauthorizedError
+  - commons.AccessDeniedError
+  - commons.MethodNotAllowedError
+  - commons.NotFoundError
+headers:
+  X-ProofState-Sdk-Name: optional<string>
+  X-ProofState-Sdk-Version: optional<string>
+  X-ProofState-Public-Key: optional<string>

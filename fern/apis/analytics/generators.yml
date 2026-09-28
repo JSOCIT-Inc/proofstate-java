@@ -1,0 +1,12 @@
+default-group: java
+groups:
+  java:
+    generators:
+      - name: fernapi/fern-java-sdk
+        version: 3.38.1
+        output:
+          location: local-file-system
+          path: ../../../generated/analytics
+        config:
+          client-class-name: ProofStateAnalyticsClient
+          package-prefix: ai.proofstate.client.analytics

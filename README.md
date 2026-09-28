@@ -10,6 +10,10 @@ The client covers API operations for prompts, datasets, scores, models,
 comments, and observations. Use the OpenTelemetry Java SDK separately to send
 traces. This API client does not instrument an application or export spans.
 
+The additive `ProofStateAnalyticsClient` covers score v3 reads, experiment
+lists, and experiment-item lists. It lives in a separate Java package so every
+method on the original `ProofStateClient` stays available.
+
 ## Build and install locally
 
 The build was verified with Java 21 and the included Maven wrapper:
@@ -47,6 +51,30 @@ the asynchronous API. Credentials are sent with HTTP Basic authentication.
 The client sends `X-ProofState-Sdk-Name: proofstate-java` and its version by
 default. `X-ProofState-Public-Key` is available when explicitly configured.
 
+## Read scores and experiments
+
+```java
+import ai.proofstate.client.analytics.ProofStateAnalyticsClient;
+import ai.proofstate.client.analytics.resources.experiments.requests.ListExperimentItemsRequest;
+import ai.proofstate.client.analytics.resources.experiments.requests.ListExperimentsRequest;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+
+ProofStateAnalyticsClient analytics = ProofStateAnalyticsClient.builder()
+    .credentials("pk-ps-...", "sk-ps-...")
+    .build();
+
+analytics.scoresV3().getManyV3().getData();
+OffsetDateTime from = OffsetDateTime.now(ZoneOffset.UTC).minusDays(30);
+analytics.experiments().list(
+    ListExperimentsRequest.builder().fromStartTime(from).build()).getData();
+analytics.experiments().listItems(
+    ListExperimentItemsRequest.builder().fromStartTime(from).build()).getData();
+```
+
+Use `.url("https://your-host")` for another ProofState deployment. The
+`fromStartTime` query parameter is required for both experiment list methods.
+
 ## Send traces with OpenTelemetry
 
 Configure the OpenTelemetry Java SDK's OTLP/HTTP exporter for
@@ -65,15 +93,15 @@ but does not instrument an application or manage span export.
 integration tests when `PROOFSTATE_PUBLIC_KEY`, `PROOFSTATE_SECRET_KEY`, and
 `PROOFSTATE_BASE_URL` are set. Copy `.env.example` to `.env` to provide them.
 The integration suite expects `test-chat-prompt` and `test-text-prompt` in that
-project, also reads the project prompt, dataset, and model lists, and skips
-when credentials are absent.
+project, also reads the project prompt, dataset, model, score v3, experiment,
+and experiment-item lists, and skips when credentials are absent.
 
 ## API coverage and regeneration
 
-This snapshot omits deprecated v3 endpoints and does not yet generate all
-newer endpoints, including `GET /api/public/v3/scores`,
-`GET /api/public/experiments`, and `GET /api/public/experiment-items`. Those
-reads require a fresh generation from the current ProofState API definition.
+This snapshot omits some deprecated and newer API endpoints. Score v3,
+experiment, and experiment-item reads are generated in the additive analytics
+client described above. The original API client remains available for its
+existing methods.
 
 The API definition is maintained in the ProofState server repository under
 `fern/apis/server`. Regenerate with a `ProofStateClient` class name and the
@@ -82,6 +110,21 @@ The API definition is maintained in the ProofState server repository under
 artifact identity, and tests after generation. During migration from a
 differently named generated package, use `--source-brand NAME` to transform its
 symbols and wire names; review the diff and run `./mvnw verify` afterward.
+
+The analytics client is generated from the pinned ProofState Fern definitions
+in `fern/apis/analytics/definition`. Update those definitions from the matching
+server revision, then on a Linux host with Docker run:
+
+```bash
+npx --yes fern-api@3.88.0 generate --local --api analytics --group java
+node scripts/sync-analytics-generated.mjs
+./mvnw verify
+```
+
+The sync script refuses to remove existing analytics classes, so schema changes
+that would shrink the Java API require review. Generated output under
+`generated/analytics` is excluded from Git; the compiled source lives under
+`src/main/java/ai/proofstate/client/analytics`.
 
 The matching ProofState server release must accept the `x-proofstate-*` headers,
 the `proofstate.*` span attributes, and the `isProofStateManaged` model JSON
