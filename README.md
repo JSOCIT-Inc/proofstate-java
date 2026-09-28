@@ -28,7 +28,7 @@ On Windows PowerShell, run `.\mvnw.cmd clean install`.
 <dependency>
     <groupId>ai.proofstate</groupId>
     <artifactId>proofstate-java</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.0-rc.1</version>
 </dependency>
 ```
 
