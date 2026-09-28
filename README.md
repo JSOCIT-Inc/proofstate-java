@@ -1,10 +1,12 @@
 # proofstate-java
 
-Java API client for [ProofState](https://proofstate.ai). This is a source
-prerelease snapshot of the ProofState API; it has not been published to Maven
-Central. The original MIT license and attribution are retained in [LICENSE](LICENSE).
+Java API client for [ProofState](https://proofstate.ai). The original MIT
+license and attribution are retained in [LICENSE](LICENSE).
 
-It has not been verified against the live ProofState deployment. Use it with a matching server revision after authenticated end-to-end checks.
+The `0.1.0-rc.1` candidate was checked against the live ProofState deployment
+on 2026-09-28 for project authentication, prompts, datasets, models, score v3,
+and nonempty experiment and experiment-item lists. Use a test project when
+adopting a prerelease.
 
 The client covers API operations for prompts, datasets, scores, models,
 comments, and observations. Use the OpenTelemetry Java SDK separately to send
@@ -14,7 +16,7 @@ The additive `ProofStateAnalyticsClient` covers score v3 reads, experiment
 lists, and experiment-item lists. It lives in a separate Java package so every
 method on the original `ProofStateClient` stays available.
 
-## Build and install locally
+## Build and install
 
 The build was verified with Java 21 and the included Maven wrapper:
 
@@ -126,12 +128,12 @@ that would shrink the Java API require review. Generated output under
 `generated/analytics` is excluded from Git; the compiled source lives under
 `src/main/java/ai/proofstate/client/analytics`.
 
-The matching ProofState server release must accept the `x-proofstate-*` headers,
-the `proofstate.*` span attributes, and the `isProofStateManaged` model JSON
-property before this client is used against production. The Java client and
-server must be deployed together for the renamed contract.
+The ProofState server at `https://proofstate.ai` accepts the matching
+`x-proofstate-*` headers, `proofstate.*` span attributes, and
+`isProofStateManaged` model JSON property. Verify compatibility with any other
+ProofState deployment before using this client there.
 
-The source repository is [JSOCIT-Inc/proofstate-java](https://github.com/JSOCIT-Inc/proofstate-java). The `ai.proofstate` Maven Central namespace is verified, and the protected release environment holds a Central publisher token and signing credentials. Authenticated checks against the deployed matching server are still required before publication.
+The source repository is [JSOCIT-Inc/proofstate-java](https://github.com/JSOCIT-Inc/proofstate-java). The `ai.proofstate` Maven Central namespace is verified, and the protected release environment holds a Central publisher token and signing credentials. The first release requires protected environment approval after its build checks pass.
 
 ## Publishing a prerelease
 
@@ -147,18 +149,16 @@ environment requires reviewer approval and contains these environment secrets:
   `keyserver.ubuntu.com` with fingerprint
   `CDFE04E6EAE97E1B30F1DB49C61542C4BD952F8E`.
 
-After the matching server release and authenticated SDK smoke test pass, replace
-the snapshot POM version with a prerelease version, such as `0.1.0-rc.1`. Make
-the generated `X-ProofState-Sdk-Version` value match the POM with
-`node scripts/rebrand-generated.mjs --refresh`, then run `./mvnw clean verify`.
-Commit the version change, create a tag `v0.1.0-rc.1`
-on that commit, and start the **Publish Maven Central** workflow with that tag.
+For each release, verify the matching server and SDK, set the POM to a new
+prerelease version, and make the generated `X-ProofState-Sdk-Version` value
+match it with `node scripts/rebrand-generated.mjs --refresh`. Run
+`./mvnw clean verify`, commit the version change, create a `v<version>` tag on
+that commit, and start the **Publish Maven Central** workflow with that tag.
 The workflow verifies the tag and POM version, reruns tests, signs the JAR,
 sources, Javadoc and POM, and publishes through the Central Portal. The
 release profile in `pom.xml` is inactive during ordinary builds. Published
 Maven Central versions are immutable.
 
-Do not run the release workflow until the production server uses the matching
-ProofState protocol and the server-backed smoke test succeeds. Verify nonempty
-experiment and item responses with the additive analytics client before the
-first public version.
+Before the first public version, authenticated checks confirmed nonempty
+experiment and item responses with the additive analytics client. Repeat
+server-backed compatibility checks for every later protocol release.
